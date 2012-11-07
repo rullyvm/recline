@@ -163,6 +163,9 @@ my.FilterEditor = Backbone.View.extend({
       }
     });
     self.model.queryState.set({filters: filters});
+
+    // return to page 0 after updating a filter
+    self.model.queryState.set({from: 0});
     self.model.queryState.trigger('change');
   }
 });
