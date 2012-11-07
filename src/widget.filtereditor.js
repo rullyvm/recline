@@ -121,10 +121,8 @@ my.FilterEditor = Backbone.View.extend({
     var $target = $(e.target);
     $target.hide();
     var filterType = $target.find('select.filterType').val();
-    var field      = $target.find('select.fields').val();
+    var field = $target.find('select.fields').val();
     this.model.queryState.addFilter({type: filterType, field: field});
-    // trigger render explicitly as queryState change will not be triggered (as blank value for filter)
-    this.render();
   },
   onRemoveFilter: function(e) {
     e.preventDefault();
@@ -136,6 +134,7 @@ my.FilterEditor = Backbone.View.extend({
    var self = this;
     e.preventDefault();
     var filters = self.model.queryState.get('filters');
+
     var $form = $(e.target);
     _.each($form.find('input'), function(input) {
       var $input = $(input);
