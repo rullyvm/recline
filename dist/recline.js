@@ -89,7 +89,7 @@ this.recline.Backend.Ckan = this.recline.Backend.Ckan || {};
     jqxhr.done(function(results) {
       var out = {
         total: results.result.total,
-        hits: results.result.records,
+        hits: results.result.records
       };
       dfd.resolve(out);  
     });
