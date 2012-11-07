@@ -310,6 +310,17 @@ my.MultiView = Backbone.View.extend({
     e.preventDefault();
     var action = $(e.target).attr('data-action');
     this['$'+action].toggle();
+
+    // if sidebar is empty, adjust size of view container to fill
+    // explorer area
+    var $dataViewContainer = this.el.find('.data-view-container');
+    var $dataSidebar = this.el.find('.data-view-sidebar');
+
+    if ($dataSidebar.children(':visible').length == 0) {
+      $dataViewContainer.css('margin-right', 0);
+    } else {
+      $dataViewContainer.css('margin-right', $dataSidebar.width() + 5);
+    }
   },
 
   _onSwitchView: function(e) {
