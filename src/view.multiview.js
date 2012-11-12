@@ -112,7 +112,7 @@ my.MultiView = Backbone.View.extend({
       <div class="menu-right"> \
         <div class="btn-group" data-toggle="buttons-checkbox"> \
           {{#sidebarViews}} \
-          <a href="#" data-action="{{id}}" class="btn active">{{label}}</a> \
+          <a href="#" data-action="{{id}}" class="btn">{{label}}</a> \
           {{/sidebarViews}} \
         </div> \
       </div> \
@@ -277,7 +277,6 @@ my.MultiView = Backbone.View.extend({
       model: this.model.queryState
     });
     this.el.find('.query-editor-here').append(queryEditor.el);
-
   },
 
   updateNav: function(pageName) {
@@ -304,13 +303,10 @@ my.MultiView = Backbone.View.extend({
         }
       }
     });
+    this._adjustViewContainerSize();
   },
 
-  _onMenuClick: function(e) {
-    e.preventDefault();
-    var action = $(e.target).attr('data-action');
-    this['$'+action].toggle();
-
+  _adjustViewContainerSize: function() {
     // if sidebar is empty, adjust size of view container to fill
     // explorer area
     var $dataViewContainer = this.el.find('.data-view-container');
@@ -323,11 +319,19 @@ my.MultiView = Backbone.View.extend({
     }
   },
 
+  _onMenuClick: function(e) {
+    e.preventDefault();
+    var action = $(e.target).attr('data-action');
+    this['$'+action].toggle();
+    this._adjustViewContainerSize();
+  },
+
   _onSwitchView: function(e) {
     e.preventDefault();
     var viewName = $(e.target).attr('data-view');
     this.updateNav(viewName);
     this.state.set({currentView: viewName});
+    this._adjustViewContainerSize();
   },
 
   // create a state object for this view and do the job of
