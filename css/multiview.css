@@ -1,11 +1,11 @@
 .recline-data-explorer .data-view-container {
   display: block;
-  margin-right: 225px;
 }
 
 .recline-data-explorer .data-view-sidebar {
   float: right;
-  width: 220px;
+  width: 215px;
+  margin-left: 5px;
 }
 
 .recline-data-explorer .header .navigation {

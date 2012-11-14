@@ -131,7 +131,7 @@ my.FilterEditor = Backbone.View.extend({
     this.model.queryState.removeFilter(filterId);
   },
   onTermFiltersUpdate: function(e) {
-   var self = this;
+    var self = this;
     e.preventDefault();
     var filters = self.model.queryState.get('filters');
 
