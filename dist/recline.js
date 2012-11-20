@@ -1446,6 +1446,8 @@ my.Dataset = Backbone.Model.extend({
 
     function handleResults(results) {
       var out = self._normalizeRecordsAndFields(results.records, results.fields);
+      out = self._guessTypes(out.records, out.fields);
+
       if (results.useMemoryStore) {
         self._store = new recline.Backend.Memory.Store(out.records, out.fields);
       }
@@ -1509,6 +1511,7 @@ my.Dataset = Backbone.Model.extend({
         return { id: fieldId };
       });
     }
+
     // records is provided as arrays so need to zip together with fields
     // NB: this requires you to have fields to match arrays
     if (records && records.length > 0 && records[0] instanceof Array) {
@@ -1520,6 +1523,55 @@ my.Dataset = Backbone.Model.extend({
         return tmp;
       });
     }
+
+    return {
+      fields: fields,
+      records: records
+    };
+  },
+
+  // ### _guessTypes
+  //
+  // Try to guess the type of fields that have no type information using
+  // the first row of records.
+  //
+  // Currently only sets types to being numbers or strings
+  _guessTypes: function(records, fields) {
+    if (fields && fields.length > 0 && records && records.length > 0) {
+      fields = _.map(fields, function(field, index) {
+        if (!field.hasOwnProperty('type')) {
+          var id = field['id'];
+
+          // guess type of each field if it is a string
+          if(records[0][id] && typeof records[0][id] === 'string') {
+            // try to convert field to a float
+            var isFloat = /^[0-9.\-]+$/.test(records[0][id]);
+            if (isFloat) {
+              field['type'] = 'float';
+            } else {
+              // set type as string
+              field['type'] = 'string';
+            }
+
+            // try to convert all records to guessed type
+            var tmp;
+            _.each(records, function(record, idx) {
+              if (typeof record[id] !== field['type']) {
+                if (field['type'] === 'float') {
+                  tmp = parseFloat(record[id]);
+                  if (!isNaN(tmp)) {
+                    record[id] = tmp;
+                  }
+                }
+              }
+            });
+          }
+        }
+
+        return field;
+      });
+    }
+
     return {
       fields: fields,
       records: records
@@ -2054,8 +2106,9 @@ my.Graph = Backbone.View.extend({
 
     // check we have something to plot
     if (this.state.get('group') && this.state.get('series')) {
-      // faff around with width because flot draws axes *outside* of the element width which means graph can get push down as it hits element next to it
-      this.$graph.width(this.el.width() - 20);
+      // faff around with width because flot draws axes *outside* of the element
+      // width which means graph can get push down as it hits element next to it
+      this.$graph.width(this.el.width() - 240);
       var series = this.createSeries();
       var options = this.getGraphOptions(this.state.attributes.graphType);
       this.plot = Flotr.draw(this.$graph.get(0), series, options);
@@ -3453,7 +3506,7 @@ my.MultiView = Backbone.View.extend({
       <div class="menu-right"> \
         <div class="btn-group" data-toggle="buttons-checkbox"> \
           {{#sidebarViews}} \
-          <a href="#" data-action="{{id}}" class="btn active">{{label}}</a> \
+          <a href="#" data-action="{{id}}" class="btn">{{label}}</a> \
           {{/sidebarViews}} \
         </div> \
       </div> \
@@ -3544,6 +3597,7 @@ my.MultiView = Backbone.View.extend({
     } else {
       this.updateNav(this.pageViews[0].id);
     }
+    this._showHideSidebar();
 
     this.model.bind('query:start', function() {
         self.notify({loader: true, persist: true});
@@ -3618,7 +3672,20 @@ my.MultiView = Backbone.View.extend({
       model: this.model.queryState
     });
     this.el.find('.query-editor-here').append(queryEditor.el);
+  },
 
+  // hide the sidebar if empty
+  _showHideSidebar: function() {
+    var $dataSidebar = this.el.find('.data-view-sidebar');
+    var visibleChildren = $dataSidebar.children().filter(function() {
+      return $(this).css("display") != "none";
+    }).length;
+
+    if (visibleChildren > 0) {
+      $dataSidebar.show();
+    } else {
+      $dataSidebar.hide();
+    }
   },
 
   updateNav: function(pageName) {
@@ -3651,17 +3718,7 @@ my.MultiView = Backbone.View.extend({
     e.preventDefault();
     var action = $(e.target).attr('data-action');
     this['$'+action].toggle();
-
-    // if sidebar is empty, adjust size of view container to fill
-    // explorer area
-    var $dataViewContainer = this.el.find('.data-view-container');
-    var $dataSidebar = this.el.find('.data-view-sidebar');
-
-    if ($dataSidebar.children(':visible').length == 0) {
-      $dataViewContainer.css('margin-right', 0);
-    } else {
-      $dataViewContainer.css('margin-right', $dataSidebar.width() + 5);
-    }
+    this._showHideSidebar();
   },
 
   _onSwitchView: function(e) {
@@ -3669,6 +3726,7 @@ my.MultiView = Backbone.View.extend({
     var viewName = $(e.target).attr('data-view');
     this.updateNav(viewName);
     this.state.set({currentView: viewName});
+    this._showHideSidebar();
   },
 
   // create a state object for this view and do the job of
@@ -4698,7 +4756,7 @@ my.Fields = Backbone.View.extend({
             </small> \
           </h4> \
         </div> \
-        <div id="collapse{{id}}" class="accordion-body collapse in"> \
+        <div id="collapse{{id}}" class="accordion-body collapse"> \
           <div class="accordion-inner"> \
             {{#facets}} \
             <div class="facet-summary" data-facet="{{id}}"> \
@@ -4717,9 +4775,6 @@ my.Fields = Backbone.View.extend({
     </div> \
   ',
 
-  events: {
-    'click .js-show-hide': 'onShowHide'
-  },
   initialize: function(model) {
     var self = this;
     this.el = $(this.el);
@@ -4737,6 +4792,7 @@ my.Fields = Backbone.View.extend({
       self.model.getFieldsSummary();
       self.render();
     });
+    this.el.find('.collapse').collapse();
     this.render();
   },
   render: function() {
@@ -4751,23 +4807,6 @@ my.Fields = Backbone.View.extend({
     });
     var templated = Mustache.render(this.template, tmplData);
     this.el.html(templated);
-    this.el.find('.collapse').collapse('hide');
-  },
-  onShowHide: function(e) {
-    e.preventDefault();
-    var $target  = $(e.target);
-    // weird collapse class seems to have been removed (can watch this happen
-    // if you watch dom) but could not work why. Absence of collapse then meant
-    // we could not toggle.
-    // This seems to fix the problem.
-    this.el.find('.accordion-body').addClass('collapse');;
-    if ($target.text() === '+') {
-      this.el.find('.collapse').collapse('show');
-      $target.text('-');
-    } else {
-      this.el.find('.collapse').collapse('hide');
-      $target.text('+');
-    }
   }
 });
 
@@ -4906,7 +4945,7 @@ my.FilterEditor = Backbone.View.extend({
     this.model.queryState.removeFilter(filterId);
   },
   onTermFiltersUpdate: function(e) {
-   var self = this;
+    var self = this;
     e.preventDefault();
     var filters = self.model.queryState.get('filters');
 

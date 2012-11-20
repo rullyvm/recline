@@ -14,7 +14,6 @@
 
 .recline-graph .graph .alert {
   width: 450px;
-  margin: auto;
 }
 
 .flotr-mouse-value {
@@ -34,7 +33,8 @@
 
 .flotr-legend-color-box {
     padding: 5px;
-}/**********************************************************
+}
+/**********************************************************
   * (Data) Grid
   *********************************************************/
 
@@ -260,12 +260,12 @@ div.data-table-cell-content-numeric > a.data-table-cell-edit {
 }
 .recline-data-explorer .data-view-container {
   display: block;
-  margin-right: 225px;
 }
 
 .recline-data-explorer .data-view-sidebar {
   float: right;
   width: 220px;
+  margin-left: 5px;
 }
 
 .recline-data-explorer .header .navigation {
@@ -357,6 +357,7 @@ div.data-table-cell-content-numeric > a.data-table-cell-edit {
 
 .recline-filter-editor {
   padding: 8px;
+  display: none;
 }
 
 .recline-filter-editor .filter-term a {
@@ -373,6 +374,10 @@ div.data-table-cell-content-numeric > a.data-table-cell-edit {
 /**********************************************************
   * Fields Widget
   *********************************************************/
+
+.recline-fields-view {
+    display: none;
+}
 
 .recline-fields-view .fields-list {
   padding: 0;
