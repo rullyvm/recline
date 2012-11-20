@@ -282,7 +282,6 @@ my.MultiView = Backbone.View.extend({
 
   // hide the sidebar if empty
   _showHideSidebar: function() {
-    // var $dataViewContainer = this.el.find('.data-view-container');
     var $dataSidebar = this.el.find('.data-view-sidebar');
     var visibleChildren = $dataSidebar.children().filter(function() {
       return $(this).css("display") != "none";
