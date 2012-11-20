@@ -66,6 +66,8 @@ my.Dataset = Backbone.Model.extend({
 
     function handleResults(results) {
       var out = self._normalizeRecordsAndFields(results.records, results.fields);
+      out = self._guessTypes(out.records, out.fields);
+
       if (results.useMemoryStore) {
         self._store = new recline.Backend.Memory.Store(out.records, out.fields);
       }
@@ -129,6 +131,7 @@ my.Dataset = Backbone.Model.extend({
         return { id: fieldId };
       });
     }
+
     // records is provided as arrays so need to zip together with fields
     // NB: this requires you to have fields to match arrays
     if (records && records.length > 0 && records[0] instanceof Array) {
@@ -140,6 +143,55 @@ my.Dataset = Backbone.Model.extend({
         return tmp;
       });
     }
+
+    return {
+      fields: fields,
+      records: records
+    };
+  },
+
+  // ### _guessTypes
+  //
+  // Try to guess the type of fields that have no type information using
+  // the first row of records.
+  //
+  // Currently only sets types to being numbers or strings
+  _guessTypes: function(records, fields) {
+    if (fields && fields.length > 0 && records && records.length > 0) {
+      fields = _.map(fields, function(field, index) {
+        if (!field.hasOwnProperty('type')) {
+          var id = field['id'];
+
+          // guess type of each field if it is a string
+          if(records[0][id] && typeof records[0][id] === 'string') {
+            // try to convert field to a float
+            var isFloat = /^[0-9.\-]+$/.test(records[0][id]);
+            if (isFloat) {
+              field['type'] = 'float';
+            } else {
+              // set type as string
+              field['type'] = 'string';
+            }
+
+            // try to convert all records to guessed type
+            var tmp;
+            _.each(records, function(record, idx) {
+              if (typeof record[id] !== field['type']) {
+                if (field['type'] === 'float') {
+                  tmp = parseFloat(record[id]);
+                  if (!isNaN(tmp)) {
+                    record[id] = tmp;
+                  }
+                }
+              }
+            });
+          }
+        }
+
+        return field;
+      });
+    }
+
     return {
       fields: fields,
       records: records
