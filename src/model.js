@@ -165,7 +165,7 @@ my.Dataset = Backbone.Model.extend({
           // guess type of each field if it is a string
           if(records[0][id] && typeof records[0][id] === 'string') {
             // try to convert field to a float
-            var isFloat = /^[0-9.\-]+$/.test(records[0][id]);
+            var isFloat = /^[-+]?[0-9]*\.?[0-9]+$/.test(records[0][id]);
             if (isFloat) {
               field['type'] = 'float';
             } else {
