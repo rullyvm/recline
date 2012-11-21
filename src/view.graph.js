@@ -123,12 +123,6 @@ my.Graph = Backbone.View.extend({
     var trackFormatter = function (obj) {
       var x = obj.x;
       var y = obj.y;
-      // it's horizontal so we have to flip
-      if (self.state.attributes.graphType === 'bars') {
-        var _tmp = x;
-        x = y;
-        y = _tmp;
-      }
       
       x = getFormattedX(x);
 
@@ -208,27 +202,6 @@ my.Graph = Backbone.View.extend({
         legend: legend,
         colors: this.graphColors,
         lines: { show: false },
-        xaxis: yaxis,
-        yaxis: xaxis,
-        mouse: { 
-          track: true,
-          relative: true,
-          trackFormatter: trackFormatter,
-          fillColor: '#FFFFFF',
-          fillOpacity: 0.3,
-          position: 'e'
-        },
-        bars: {
-          show: true,
-          horizontal: true,
-          shadowSize: 0,
-          barWidth: 0.8         
-        }
-      },
-      columns: {
-        legend: legend,
-        colors: this.graphColors,
-        lines: { show: false },
         xaxis: xaxis,
         yaxis: yaxis,
         mouse: { 
@@ -266,30 +239,19 @@ my.Graph = Backbone.View.extend({
         
         if (isDateTime) {
           // datetime
-          if (self.state.attributes.graphType != 'bars' && self.state.attributes.graphType != 'columns') {
-            // not bar or column
+          if (self.state.attributes.graphType != 'bars') {
             x = new Date(x).getTime();
           } else {
-            // bar or column
             x = index;
           }
         } else if (typeof x === 'string') {
-          // string
-          x = parseFloat(x);
-          if (isNaN(x)) {
-            x = index;
-          }
+          x = index;
         }
 
         var yfield = self.model.fields.get(field);
         var y = doc.getFieldValue(yfield);
         
-        // horizontal bar chart
-        if (self.state.attributes.graphType == 'bars') {
-          points.push([y, x]);
-        } else {
-          points.push([x, y]);
-        }
+        points.push([x, y]);
       });
       series.push({data: points, label: field, mouse:{lineColor: self.graphColors[series.length]}});
     });
@@ -310,7 +272,6 @@ my.GraphControls = Backbone.View.extend({
           <option value="lines">Lines</option> \
           <option value="points">Points</option> \
           <option value="bars">Bars</option> \
-          <option value="columns">Columns</option> \
           </select> \
         </div> \
         <label>Group Column (x-axis)</label> \
