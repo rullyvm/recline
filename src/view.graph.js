@@ -274,7 +274,7 @@ my.GraphControls = Backbone.View.extend({
           <option value="bars">Bars</option> \
           </select> \
         </div> \
-        <label>Group Column (x-axis)</label> \
+        <label>X-Axis</label> \
         <div class="input editor-group"> \
           <select> \
           <option value="">Please choose ...</option> \
@@ -287,7 +287,7 @@ my.GraphControls = Backbone.View.extend({
         </div> \
       </div> \
       <div class="editor-buttons"> \
-        <button class="btn editor-add">Add Series</button> \
+        <button class="btn editor-add">Add Additional Y-Axis Plot</button> \
       </div> \
       <div class="editor-buttons editor-submit" comment="hidden temporarily" style="display: none;"> \
         <button class="editor-save">Save</button> \
@@ -298,7 +298,7 @@ my.GraphControls = Backbone.View.extend({
 ',
   templateSeriesEditor: ' \
     <div class="editor-series js-series-{{seriesIndex}}"> \
-      <label>Series <span>{{seriesName}} (y-axis)</span> \
+      <label>Y-Axis (<span>{{seriesName}})</span> \
         [<a href="#remove" class="action-remove-series">Remove</a>] \
       </label> \
       <div class="input"> \
