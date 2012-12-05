@@ -74,7 +74,7 @@ my.Timeline = Backbone.View.extend({
     var config = {};
     var data = this._timelineJSON();
     this.timeline.init(data, this.elementId, config);
-    this._timelineIsInitialized = true
+    this._timelineIsInitialized = true;
   },
 
   reloadData: function() {
