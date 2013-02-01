@@ -15,13 +15,12 @@ this.recline.View = this.recline.View || {};
 //        { 
 //          group: {column name for x-axis},
 //          series: [{column name for series A}, {column name series B}, ... ],
-//          graphType: 'line',
-//          graphOptions: {custom [Flotr2 options](http://www.humblesoftware.com/flotr2/documentation#configuration)}
+//          graphType: 'line'
 //        }
-// 
+//
 // NB: should *not* provide an el argument to the view but must let the view
 // generate the element itself (you can then append view.el to the DOM.
-my.Graph = Backbone.View.extend({
+my.Flot = Backbone.View.extend({
   template: ' \
     <div class="recline-graph"> \
       <div class="panel graph" style="display: block;"> \
@@ -56,7 +55,7 @@ my.Graph = Backbone.View.extend({
     );
     this.state = new recline.Model.ObjectState(stateData);
     this.previousTooltipPoint = {x: null, y: null};
-    this.editor = new my.GraphControls({
+    this.editor = new my.FlotControls({
       model: this.model,
       state: this.state.toJSON()
     });
@@ -275,14 +274,7 @@ my.Graph = Backbone.View.extend({
         grid: grid
       }
     };
-    
-    if (self.state.get('graphOptions')){
-      return _.extend(optionsPerGraphType[typeId],
-        self.state.get('graphOptions')  
-      )
-    }else{
-      return optionsPerGraphType[typeId];
-    }
+    return optionsPerGraphType[typeId];
   },
 
   createSeries: function() {
@@ -324,7 +316,7 @@ my.Graph = Backbone.View.extend({
   }
 });
 
-my.GraphControls = Backbone.View.extend({
+my.FlotControls = Backbone.View.extend({
   className: "editor",
   template: ' \
   <div class="editor"> \

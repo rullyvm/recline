@@ -15,11 +15,23 @@ A simple but powerful library for building data applications in pure Javascript 
 
 ## Developer Notes
 
-Running the tests by opening `test/index.html` in your browser.
+Run the tests by opening `test/index.html` in your browser.
+
+Notes on the architecture can be found in the [documentation online](http://okfnlabs.org/recline).
 
 ### Contributing
 
 We welcome patches and pull requests and have a few guidelines.
+
+General:
+
+* Please do **not** build the dist files (e.g. dist/recline.js) when submitting
+  patches. dist files will get built automatically and if they are part of a
+  patch or pull request it makes them harder to review and more likely to
+  conflict.
+* If possible have an issue to which the commits can relate. You can reference
+  an issue in the commits by just including #{issue-number} somewhere in the
+  commit message).  Note if no issue exists suggest creating one.
 
 For small bugfixes or enhancements:
 
@@ -33,6 +45,16 @@ For larger changes:
 * Update `/_includes/recline-deps.html` if you change required files (e.g. leaflet libraries)
 * Try to build the demos in `/demos/` with jekyll and then check out the `/demos/multiview/` which utilizes most aspects of Recline
 
+### Contributors
+
+* [Rufus Pollock](http://rufuspollock.org/)
+* [Max Ogden](http://maxogden.com/)
+* [John Glover](https://github.com/johnglover)
+* [James Casbon](http://casbon.me/)
+* [Adrià Mercader](http://amercader.net/)
+* [Dominik Moritz](https://github.com/domoritz)
+* [Friedrich Lindenberg](http://pudo.org/)
+* And [many more](https://github.com/okfn/recline/graphs/contributors)
 
 ## Changelog
 
@@ -46,6 +68,8 @@ Possible breaking changes
 * Added marker clustering in map view to handle a large number of markers
 * Dataset.restore method removed (not used internally except from Multiview.restore)
 * Views no longer call render in initialize but must be called client code
+* Backend.Memory.Store attribute for holding 'records' renamed to `records` from `data`
+* Require new underscore.deferred vendor library for all use (jQuery no longer required if just using recline.dataset.js)
 
 ### v0.5 - July 5th 2012 (first public release)
 
