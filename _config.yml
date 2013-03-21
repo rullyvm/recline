@@ -1,5 +1,8 @@
 pygments: true
 auto: true
+safe: true
+source: http://rullyvm.github.com/recline/test/index.html
+destination: <gh-pages>
 
 title: Recline Data Explorer and Library
 
